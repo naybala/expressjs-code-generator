@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "bin": {
-    "make-core-feature": "./index.js"
+    "make-core-feature": "index.js"
   },
   "dependencies": {
     "fs-extra": "^11.1.1",
