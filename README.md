@@ -22,6 +22,8 @@ Install via npm:
 ```bash
 npm install mini-express-generator
 
+add in your package.json
+
 "scripts": {
     ...,
     ... other scripts,
