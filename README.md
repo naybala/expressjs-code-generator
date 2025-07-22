@@ -11,23 +11,29 @@ A simple CLI tool to quickly generate ExpressJS core features including domain r
 - Create service layer with pagination support
 - Scaffold routes with authentication and validation middleware
 - Create validation rules using `express-validator`
-- Supports generating for different modules like `web`, `mobile`, `spa`
+- Supports generating for different modules like `Web`, `Mobile`, `Spa`
 
 ---
 
 ## Installation
 
-Install globally via npm:
+Install via npm:
 
 ```bash
-npm install -g mini-express-generator
+npm install mini-express-generator
+
+"scripts": {
+    ...,
+    ... other scripts,
+    ...,
+    "make-core-feature": "node ./node_modules/mini-express-generator/index.js"
+  }
 ```
 
 ## Usage
 
 ```bash
-npm link
-make-core-feature
+npm run make-core-feature
 ```
 
 ## Folder directory
