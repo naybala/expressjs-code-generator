@@ -35,11 +35,11 @@ make-core-feature
 ```bash
 modules/
 ├── domain/
-│   └── user/
-│       ├── user.repository.ts
-│       └── userRepository.interface.ts
+│   └── name/
+│       ├── name.repository.ts
+│       └── nameRepository.interface.ts
 └── [web|mobile|spa]/
-    └── users/
+    └── names/
         ├── controllers/index.ts
         ├── resources/index.ts
         ├── resources/show.ts
