@@ -14,9 +14,12 @@ import validationTemplate from "./templates/validation.js";
 import repositoryTemplate from "./templates/repository.js";
 import repositoryInterfaceTemplate from "./templates/repositoryInterface.js";
 
-// __dirname workaround for ESM
+// __dirname workaround for ESM (used only for locating templates, not output)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// Root of the user's project (where CLI is executed)
+const projectRoot = process.cwd();
 
 async function main() {
   const answers = await inquirer.prompt([
@@ -33,26 +36,27 @@ async function main() {
     },
   ]);
 
-  const type = answers.type.toLowerCase(); // e.g. web
-  const name = answers.name.toLowerCase(); // e.g. user
-  const pascalName = capitalize(name); // e.g. User
-  const camelName = name.toLowerCase(); // e.g. user
+  const type = answers.type.toLowerCase();
+  const name = answers.name.toLowerCase();
+  const pascalName = capitalize(name);
+  const camelName = name.toLowerCase();
 
   // === DOMAIN FILES ===
-  const domainPath = path.join(__dirname, "modules", "domain", name);
+  const domainPath = path.join(projectRoot, "modules", "domain", name);
   await fs.ensureDir(domainPath);
 
   await fs.writeFile(
     path.join(domainPath, `${name}.repository.ts`),
     repositoryTemplate(name)
   );
+
   await fs.writeFile(
     path.join(domainPath, `${name}Repository.interface.ts`),
     repositoryInterfaceTemplate(name)
   );
 
   // === MODULE FILES ===
-  const basePath = path.join(__dirname, "modules", type, `${camelName}s`);
+  const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
   const files = {
     "controllers/index.ts": controllerTemplate(name, type),
     "resources/index.ts": resourceIndexTemplate(name),
@@ -62,15 +66,19 @@ async function main() {
     "validations/index.ts": validationTemplate(name),
   };
 
-  for (const [relativePath, content] of Object.entries(files)) {
-    const fullPath = path.join(basePath, relativePath);
-    await fs.ensureDir(path.dirname(fullPath));
-    await fs.writeFile(fullPath, content.trim());
-  }
+  try {
+    for (const [relativePath, content] of Object.entries(files)) {
+      const fullPath = path.join(basePath, relativePath);
+      await fs.ensureDir(path.dirname(fullPath));
+      await fs.writeFile(fullPath, content.trim());
+    }
 
-  console.log(
-    `"${pascalName}" feature generated under "modules/${type}/${camelName}s"`
-  );
+    console.log(`✅ "${pascalName}" feature generated under:`);
+    console.log(`   modules/domain/${name}`);
+    console.log(`   modules/${type}/${camelName}s`);
+  } catch (err) {
+    console.error("Failed to create module files:", err);
+  }
 }
 
 function capitalize(str) {
