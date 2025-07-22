@@ -1,5 +1,5 @@
 {
-  "name": "153808-expressjs-code-generator",
+  "name": "mini-express-generator",
   "version": "1.0.0",
   "type": "module",
   "bin": {
