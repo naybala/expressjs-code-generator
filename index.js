@@ -4,7 +4,7 @@ import path from "path";
 import inquirer from "inquirer";
 import { fileURLToPath } from "url";
 
-// Template imports
+// Template imports (always relative to this script)
 import controllerTemplate from "./templates/controller.js";
 import resourceIndexTemplate from "./templates/resourceIndex.js";
 import resourceShowTemplate from "./templates/resourceShow.js";
@@ -14,19 +14,19 @@ import validationTemplate from "./templates/validation.js";
 import repositoryTemplate from "./templates/repository.js";
 import repositoryInterfaceTemplate from "./templates/repositoryInterface.js";
 
-// __dirname workaround for ESM (used only for locating templates, not output)
+// Use __dirname only to resolve template imports, NOT for output paths
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Root of the user's project (where CLI is executed)
+// Set projectRoot = where user called the CLI
 const projectRoot = process.cwd();
 
 async function main() {
-  const answers = await inquirer.prompt([
+  const { type, name: rawName } = await inquirer.prompt([
     {
       type: "list",
       name: "type",
-      message: "What do you want to generate?",
+      message: "What module should the feature be generated under?",
       choices: ["mobile", "spa", "web"],
     },
     {
@@ -36,53 +36,55 @@ async function main() {
     },
   ]);
 
-  const type = answers.type.toLowerCase();
-  const name = answers.name.toLowerCase();
-  const pascalName = capitalize(name);
-  const camelName = name.toLowerCase();
+  const typeFolder = type.toLowerCase(); // 'web', 'mobile', or 'spa'
+  const featureName = rawName.trim().toLowerCase();
+  const pascalName = capitalize(featureName);
+  const camelName = featureName;
 
-  // === DOMAIN FILES ===
-  const domainPath = path.join(projectRoot, "modules", "domain", name);
-  await fs.ensureDir(domainPath);
-
+  // DOMAIN
+  const domainDir = path.join(projectRoot, "modules", "domain", camelName);
+  await fs.ensureDir(domainDir);
   await fs.writeFile(
-    path.join(domainPath, `${name}.repository.ts`),
-    repositoryTemplate(name)
+    path.join(domainDir, `${camelName}.repository.ts`),
+    repositoryTemplate(featureName)
+  );
+  await fs.writeFile(
+    path.join(domainDir, `${camelName}Repository.interface.ts`),
+    repositoryInterfaceTemplate(featureName)
   );
 
-  await fs.writeFile(
-    path.join(domainPath, `${name}Repository.interface.ts`),
-    repositoryInterfaceTemplate(name)
+  // MODULE
+  const featureDir = path.join(
+    projectRoot,
+    "modules",
+    typeFolder,
+    `${camelName}s`
   );
-
-  // === MODULE FILES ===
-  const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
-  const files = {
-    "controllers/index.ts": controllerTemplate(name, type),
-    "resources/index.ts": resourceIndexTemplate(name),
-    "resources/show.ts": resourceShowTemplate(name),
-    "routes/index.ts": routeTemplate(name, type),
-    "services/index.ts": serviceTemplate(name, type),
-    "validations/index.ts": validationTemplate(name),
+  const entries = {
+    "controllers/index.ts": controllerTemplate(featureName, typeFolder),
+    "resources/index.ts": resourceIndexTemplate(featureName),
+    "resources/show.ts": resourceShowTemplate(featureName),
+    "routes/index.ts": routeTemplate(featureName, typeFolder),
+    "services/index.ts": serviceTemplate(featureName, typeFolder),
+    "validations/index.ts": validationTemplate(featureName),
   };
 
   try {
-    for (const [relativePath, content] of Object.entries(files)) {
-      const fullPath = path.join(basePath, relativePath);
-      await fs.ensureDir(path.dirname(fullPath));
-      await fs.writeFile(fullPath, content.trim());
+    for (const [relPath, content] of Object.entries(entries)) {
+      const outPath = path.join(featureDir, relPath);
+      await fs.ensureDir(path.dirname(outPath));
+      await fs.writeFile(outPath, content.trim());
     }
-
-    console.log(`✅ "${pascalName}" feature generated under:`);
-    console.log(`   modules/domain/${name}`);
-    console.log(`   modules/${type}/${camelName}s`);
+    console.log(`"${pascalName}" feature generated successfully!`);
+    console.log(`Domain: modules/domain/${camelName}`);
+    console.log(`Feature: modules/${typeFolder}/${camelName}s`);
   } catch (err) {
-    console.error("Failed to create module files:", err);
+    console.error("Error creating files:", err);
   }
 }
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+function capitalize(s) {
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-main().catch((err) => console.error("Error:", err));
+main().catch((err) => console.error("Unexpected Error:", err));
