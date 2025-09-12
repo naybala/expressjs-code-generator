@@ -3,30 +3,29 @@ export default function routeTemplate(name, type) {
   const camel = name.toLowerCase();
 
   return `import { Router } from "express";
+  import { authenticate } from "@${type}/base/auth";
 import * as ${camel}Controller from "../controllers";
-import { authenticate } from "@${type}/base/auth";
 import { store${pascal}Validator, update${pascal}Validator } from "../validations";
 import { validateRequest } from "@${type}/base/validateRequest";
 
 const router: Router = Router();
+router.use(authenticate);
 
-router.get("/", authenticate, ${camel}Controller.index);
-router.get("/:id", authenticate, ${camel}Controller.show);
+router.get("/", ${camel}Controller.index);
+router.get("/:id", ${camel}Controller.show);
 router.post(
   "/",
-  authenticate,
   store${pascal}Validator,
   validateRequest,
   ${camel}Controller.store
 );
 router.put(
   "/",
-  authenticate,
   update${pascal}Validator,
   validateRequest,
   ${camel}Controller.update
 );
-router.delete("/:id", authenticate, ${camel}Controller.destroy);
+router.delete("/:id", ${camel}Controller.destroy);
 
 export default router;
 `;

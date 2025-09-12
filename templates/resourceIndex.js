@@ -1,19 +1,34 @@
 export default function resourceIndexTemplate(name) {
   const pascal = capitalize(name);
   const camel = name.toLowerCase();
-  return `import { ${pascal} } from "@prisma/client";
+  return `
+  import { PaginationResourceType } from '@web/base/types/paginate';
+  import { buildPaginatedResource } from '@web/base/buildPaginatedResource';
+  import { ${pascal} } from "@prisma/client";
 
-    export interface Index${pascal}Interface {
-    id: number,
-    name: string,
-    }
+  type Paginate${pascal}Type = {
+  data: ${camel}[];
+  } & PaginationResourceType;
 
-    export function index${pascal}Resource(${camel}: ${pascal}): Index${pascal}Interface {
+  const transform${pascal} = (data: ${camel}) => {
     return {
-        id: ${camel}.id,
-        name: ${camel}.name ?? '',
-    };
+      id: data.id,
+      name: data.name,
+      createdAt: data.createdAt,
     }
+  }
+
+  export const index${pascal}Resource = (data: Paginate${pascal}Type) => {
+    return buildPaginatedResource(data,transform${pascal});
+  };
+
+  export const getAll${pascal} = (data: ${camel}[]) => {
+    return data.map(transform${pascal});
+  };
+
+  export const show${pascal}Resource = (data: ${camel}) => ({
+    ...transform${pascal}(data),
+  })
 `;
 }
 function capitalize(str) {

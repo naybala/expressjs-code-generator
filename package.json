@@ -1,12 +1,13 @@
 {
   "name": "mini-express-generator",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "type": "module",
   "bin": {
     "make-core-feature": "./index.js"
   },
   "dependencies": {
     "fs-extra": "^11.1.1",
-    "inquirer": "^9.0.0"
+    "inquirer": "^9.0.0",
+    "pluralize": "^8.0.0"
   }
 }

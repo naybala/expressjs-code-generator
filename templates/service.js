@@ -1,87 +1,59 @@
-export default function serviceTemplate(name, type) {
+export default function serviceTemplate(name, type, pluralName) {
   const pascal = capitalize(name); // User
   const camel = name.toLowerCase(); // user
+  const space = "";
 
-  return `import { Request } from "express";
-    import { ${camel}Repository } from "@${type}/domain/${camel}/${camel}.repository";
-    import { index${pascal}Resource, Index${pascal}Interface } from "../resources";
-    import { show${pascal}Resource, Show${pascal}Interface } from "../resources/show";
-    import { ${pascal} } from "@prisma/client";
-
-type ${pascal}QueryParams = {
-  page?: string;
-  limit?: string;
-  search?: string;
-};
+  return `import getPagination from '@util/request/get-pagination';
+    import { ${camel}Repository } from ""@/modules/domain/${pluralName}/${camel}.repository";
+    import { index${pascal}Resource, show${pascal}Resource } from "../resources";
+    import { generateId } from '@/utils/id-generator';
+    import { generatePresignedUrl,deleteS3Object } from  '@util/storage/s3-builder';
 
 // GET ALL with pagination
-export const get = async (
-  req: Request<any, any, any, ${pascal}QueryParams>
-): Promise<{
-  data: Index${pascal}Interface[];
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}> => {
-  const page = parseInt(req.query.page || "1", 10);
-  const limit = parseInt(req.query.limit || "10", 10);
-  const search = req.query.search || "";
+    export const index = async (req: any) => {
+      const { page, limit } = getPagination(req.query);
+      const search = req.query.search?.toString()?.replace(/[.*+?^${space}()|[\]\\]/g, '\\$&') || '';
 
-  const ${camel}s = await ${camel}Repository
-    .with("role:id,name")
-    .order("id", "asc")
-    .getWithPaginate(page, limit, search);
+      const ${pluralName} = await ${camel}Repository()
+        .select(['id','name'])
+        .order('id')
+        .orWhereLike('name',search)
+        .getWithPaginate(page,limit);
+      return index${pascal}Resource(${pluralName});
+    };
 
-  return {
-    data: ${camel}s.data.map(index${pascal}Resource),
-    page: ${camel}s.page,
-    limit: ${camel}s.limit,
-    total: ${camel}s.total,
-    totalPages: ${camel}s.totalPages,
-  };
-};
+    // CREATE
+     export const store = async (data: any,createdUser: string) => {
+      const id = generateId();
+      data.id = id;
+      data.createdUser = createdUser;
+      const ${camel} = await ${camel}Repository.create(data);
+      return ${camel};
+    };
 
-// GET SINGLE
-export const show = async (id: number): Promise<Show${pascal}Interface | null> => {
-  const ${camel}: ${pascal} | null = await ${camel}Repository.find(id);
-  return ${camel} ? show${pascal}Resource(${camel}) : null;
-};
+    // GET SINGLE
+    export const show = async (id: string) => {
+      const ${camel}: ${pascal} | null = await ${camel}Repository.find(id);
+      return show${pascal}Resource(${camel});
+    };
 
-// CREATE
-export const store = async (
-  data: Partial<${pascal}>
-): Promise<${pascal}> => {
-  return ${camel}Repository.create(data);
-};
+    
 
-// UPDATE
-export const update = async (
-  data: Partial<${pascal}>
-): Promise<${pascal} | null> => {
-  const existing = await ${camel}Repository.find(Number(data.id));
-  if (!existing) return null;
-  return ${camel}Repository.update(Number(data.id), data);
-};
+    // UPDATE
+    export const update = async (id: string, data: any) => {
+      const existing = await ${camel}Repository.find(Number(data.id));
+      if (!existing) return null;
+      return ${camel}Repository.update(Number(data.id), data);
+    };
 
-// SOFT DELETE
-export const softDelete = async (
-  id: number,
-  deletedBy?: number
-): Promise<${pascal} | null> => {
-  const existing = await ${camel}Repository.find(id);
-  if (!existing) return null;
-  return ${camel}Repository.softDelete(id, deletedBy);
-};
+    // SOFT DELETE
+   export const destroy = async (id: string) => {
+      const existing = await ${camel}Repository.find(id);
+      if (!existing) return null;
+      return ${camel}Repository.softDelete(id, deletedBy);
+    };
 
-// HARD DELETE
-export const hardDelete = async (
-  id: number
-): Promise<${pascal} | null> => {
-  const existing = await ${camel}Repository.find(id);
-  if (!existing) return null;
-  return ${camel}Repository.delete(id);
-};
+    // HARD DELETE
 `;
 }
 

@@ -2,6 +2,7 @@
 import fs from "fs-extra";
 import path from "path";
 import inquirer from "inquirer";
+import pluralize from "pluralize";
 import { fileURLToPath } from "url";
 
 // Template imports
@@ -31,12 +32,13 @@ async function main() {
     {
       type: "input",
       name: "name",
-      message: "Name of the feature to generate:",
+      message: "Name of the feature to generate for example 'User' : ",
     },
   ]);
 
   const type = answers.type; // e.g. Web
   const name = answers.name.toLowerCase(); // e.g. user
+  const pluralName = pluralize(name); // <-- pluralize properly
   const pascalName = capitalize(name); // e.g. User
   const camelName = name.toLowerCase(); // e.g. user
 
@@ -45,22 +47,22 @@ async function main() {
   await fs.ensureDir(domainPath);
 
   await fs.writeFile(
-    path.join(domainPath, `${name}.repository.ts`),
+    path.join(domainPath, `${pluralName}.repository.ts`),
     repositoryTemplate(name)
   );
   await fs.writeFile(
-    path.join(domainPath, `${name}Repository.interface.ts`),
+    path.join(domainPath, `${pluralName}Repository.interface.ts`),
     repositoryInterfaceTemplate(name)
   );
 
   // === MODULE FILES ===
   const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
   const files = {
-    "controllers/index.ts": controllerTemplate(name, type),
+    "controllers/index.ts": controllerTemplate(name, type, pluralName),
     "resources/index.ts": resourceIndexTemplate(name),
     "resources/show.ts": resourceShowTemplate(name),
-    "routes/index.ts": routeTemplate(name, type),
-    "services/index.ts": serviceTemplate(name, type),
+    "routes/index.ts": routeTemplate(name, type, pluralName),
+    "services/index.ts": serviceTemplate(name, type, pluralName),
     "validations/index.ts": validationTemplate(name),
   };
 
