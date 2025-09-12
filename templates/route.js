@@ -7,10 +7,10 @@ export default function routeTemplate(
   type
 ) {
   return `import { Router } from "express";
-  import { authenticate } from "@${type}/base/auth";
+  import { authenticate } from "../../base/auth";
   import * as ${camelName}Controller from "../controllers";
   import { store${pascalName}Validator, update${pascalName}Validator } from "../validations";
-  import { validateRequest } from "@${type}/base/validateRequest";
+  import { validateRequest } from "../../base/validateRequest";
 
 const router: Router = Router();
 router.use(authenticate);

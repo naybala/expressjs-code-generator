@@ -29,16 +29,15 @@ export default function serviceTemplate(
 
     // CREATE
      export const store = async (data: any,createdUser: string) => {
-      const id = generateId();
+      const id = generateId(17);
       data.id = id;
       data.createdUser = createdUser;
-      const ${camelName} = await ${camelName}Repository.create(data);
+      const ${camelName}:any = await ${camelName}Repository().create(data);
       return ${camelName};
     };
-
     // GET SINGLE
     export const show = async (id: string) => {
-      const ${camelName} = await ${camelName}Repository.find(id);
+      const ${camelName}:any = await ${camelName}Repository().find(id);
       return show${pascalName}Resource(${camelName});
     };
 
@@ -46,16 +45,16 @@ export default function serviceTemplate(
 
     // UPDATE
     export const update = async (id: string, data: any) => {
-      const existing = await ${camelName}Repository.find(Number(data.id));
+      const existing = await ${camelName}Repository().find(Number(data.id));
       if (!existing) return null;
-      return ${camelName}Repository.update(Number(data.id), data);
+      return ${camelName}Repository().update(Number(data.id), data);
     };
 
     // SOFT DELETE
    export const destroy = async (id: string) => {
-      const existing = await ${camelName}Repository.find(id);
+      const existing = await ${camelName}Repository().find(id);
       if (!existing) return null;
-      return ${camelName}Repository.delete(id);
+      return ${camelName}Repository().delete(id);
     };
 
     // HARD DELETE

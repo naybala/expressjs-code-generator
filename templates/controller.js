@@ -12,7 +12,7 @@ import * as ${pascalName}Service from "../services";
 
 export const index = async (req: Request, res: Response): Promise<void> => {
   try {
-    const ${repoName} = await ${pascalName}Service.index(req);
+    const ${repoName}:any = await ${pascalName}Service.index(req);
     res.successResponse(res, ${repoName}, 200);
   } catch (error) {
     res.failResponse(error);
@@ -23,8 +23,8 @@ export const store = async (req: Request, res: Response): Promise<void> => {
   try {
     const validated = matchedData(req, { locations: ["body"] });
     if(!req.user?.id) throw new Error('User not found');
-    const ${repoName} = await ${pascalName}Service.store(validated, req.user.id);
-    res.successResponse(res, ${repoName}, 201, "${pascalName} created");
+    const ${repoName}:any = await ${pascalName}Service.store(validated, req.user.id);
+    res.successResponse(res, ${repoName}, 201);
   } catch (error) {
     res.failResponse(error);
   }
@@ -32,7 +32,7 @@ export const store = async (req: Request, res: Response): Promise<void> => {
 
 export const show = async (req: Request, res: Response): Promise<void> => {
   try {
-    const ${repoName} = await ${pascalName}Service.show(req.params.id);
+    const ${repoName}:any = await ${pascalName}Service.show(req.params.id);
     res.successResponse(res, ${repoName}, 200);
   } catch (error) {
     res.failResponse(error);
@@ -41,10 +41,10 @@ export const show = async (req: Request, res: Response): Promise<void> => {
 
 export const update = async (req: Request, res: Response): Promise<void> => {
   try {
-    const validated = matchedData(req, { locations: ["body"] });
+    const validated:any = matchedData(req, { locations: ["body"] });
     if(!req.user?.id) throw new Error('User not found');
-    const ${repoName} = await ${pascalName}Service.update(validated, req.user.id);
-    res.successResponse(res, ${repoName}, 200, "${pascalName} updated");
+    const ${repoName}:any = await ${pascalName}Service.update(validated, req.user.id);
+    res.successResponse(res, ${repoName}, 200);
   } catch (error) {
     res.failResponse(error);
   }
@@ -52,8 +52,8 @@ export const update = async (req: Request, res: Response): Promise<void> => {
 
 export const destroy = async (req: Request, res: Response): Promise<void> => {
   try {
-    const deleted = await ${pascalName}Service.destroy(req.params.id);
-    res.successResponse(res, null, 204, "${pascalName} deleted");
+    const deleted:any = await ${pascalName}Service.destroy(req.params.id);
+    res.successResponse(res, deleted, 204);
   } catch (error) {
     res.failResponse(error);
   }
