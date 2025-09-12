@@ -13,12 +13,9 @@ export default function repositoryTemplate(
 
     export const ${camelName}Repository = (): ${pascalName}RepositoryInterface => {
       const builder: BaseRepositoryInterface<${camelName}> = baseRepository<${camelName}>(prisma.${camelName});
-      return new Proxy({} as ${pascalName}RepositoryInterface, {
-        get(target, prop: string) {
-          const method = builder[prop as keyof BaseRepositoryInterface<${camelName}>]; 
-          return typeof method === 'function' ? method.bind(builder) : method;
-        },
-      });
+      return {
+        ...builder,
+      };
     };
 
 `;
