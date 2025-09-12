@@ -1,16 +1,21 @@
-export default function resourceIndexTemplate(name) {
-  const pascal = capitalize(name);
-  const camel = name.toLowerCase();
+export default function resourceIndexTemplate(
+  name,
+  pluralName,
+  pascalName,
+  camelName,
+  repoName,
+  type
+) {
   return `
   import { PaginationResourceType } from '@web/base/types/paginate';
   import { buildPaginatedResource } from '@web/base/buildPaginatedResource';
-  import { ${pascal} } from "@prisma/client";
+  import { ${camelName} } from "@prisma/client";
 
-  type Paginate${pascal}Type = {
-  data: ${camel}[];
+  type Paginate${pascalName}Type = {
+  data: ${camelName}[];
   } & PaginationResourceType;
 
-  const transform${pascal} = (data: ${camel}) => {
+  const transform${pascalName} = (data: ${camelName}) => {
     return {
       id: data.id,
       name: data.name,
@@ -18,19 +23,16 @@ export default function resourceIndexTemplate(name) {
     }
   }
 
-  export const index${pascal}Resource = (data: Paginate${pascal}Type) => {
-    return buildPaginatedResource(data,transform${pascal});
+  export const index${pascalName}Resource = (data: Paginate${pascalName}Type) => {
+    return buildPaginatedResource(data,transform${pascalName});
   };
 
-  export const getAll${pascal} = (data: ${camel}[]) => {
-    return data.map(transform${pascal});
+  export const getAll${pascalName} = (data: ${camelName}[]) => {
+    return data.map(transform${pascalName});
   };
 
-  export const show${pascal}Resource = (data: ${camel}) => ({
-    ...transform${pascal}(data),
+  export const show${pascalName}Resource = (data: ${camelName}) => ({
+    ...transform${pascalName}(data),
   })
 `;
-}
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

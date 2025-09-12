@@ -1,11 +1,16 @@
-export default function serviceTemplate(name, type, pluralName) {
-  const pascal = capitalize(name); // User
-  const camel = name.toLowerCase(); // user
+export default function serviceTemplate(
+  name,
+  pluralName,
+  pascalName,
+  camelName,
+  repoName,
+  type
+) {
   const space = "";
 
   return `import getPagination from '@util/request/get-pagination';
-    import { ${camel}Repository } from ""@/modules/domain/${pluralName}/${camel}.repository";
-    import { index${pascal}Resource, show${pascal}Resource } from "../resources";
+    import { ${camelName}Repository } from "@/modules/domain/${repoName}/${camelName}.repository";
+    import { index${pascalName}Resource, show${pascalName}Resource } from "../resources";
     import { generateId } from '@/utils/id-generator';
     import { generatePresignedUrl,deleteS3Object } from  '@util/storage/s3-builder';
 
@@ -14,12 +19,12 @@ export default function serviceTemplate(name, type, pluralName) {
       const { page, limit } = getPagination(req.query);
       const search = req.query.search?.toString()?.replace(/[.*+?^${space}()|[\]\\]/g, '\\$&') || '';
 
-      const ${pluralName} = await ${camel}Repository()
+      const ${camelName} = await ${camelName}Repository()
         .select(['id','name'])
         .order('id')
         .orWhereLike('name',search)
         .getWithPaginate(page,limit);
-      return index${pascal}Resource(${pluralName});
+      return index${pascalName}Resource(${camelName});
     };
 
     // CREATE
@@ -27,36 +32,32 @@ export default function serviceTemplate(name, type, pluralName) {
       const id = generateId();
       data.id = id;
       data.createdUser = createdUser;
-      const ${camel} = await ${camel}Repository.create(data);
-      return ${camel};
+      const ${camelName} = await ${camelName}Repository.create(data);
+      return ${camelName};
     };
 
     // GET SINGLE
     export const show = async (id: string) => {
-      const ${camel}: ${pascal} | null = await ${camel}Repository.find(id);
-      return show${pascal}Resource(${camel});
+      const ${camelName} = await ${camelName}Repository.find(id);
+      return show${pascalName}Resource(${camelName});
     };
 
     
 
     // UPDATE
     export const update = async (id: string, data: any) => {
-      const existing = await ${camel}Repository.find(Number(data.id));
+      const existing = await ${camelName}Repository.find(Number(data.id));
       if (!existing) return null;
-      return ${camel}Repository.update(Number(data.id), data);
+      return ${camelName}Repository.update(Number(data.id), data);
     };
 
     // SOFT DELETE
    export const destroy = async (id: string) => {
-      const existing = await ${camel}Repository.find(id);
+      const existing = await ${camelName}Repository.find(id);
       if (!existing) return null;
-      return ${camel}Repository.softDelete(id, deletedBy);
+      return ${camelName}Repository.delete(id);
     };
 
     // HARD DELETE
 `;
-}
-
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
 }

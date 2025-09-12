@@ -1,9 +1,13 @@
-export default function repositoryInterfaceTemplate(name) {
-  const pascal = capitalize(name);
-  return `import { ${pascal} } from "@prisma/client";
+export default function repositoryInterfaceTemplate(
+  name,
+  pluralName,
+  pascalName,
+  camelName,
+  repoName
+) {
+  return `import { ${camelName} } from "@prisma/client";
     import { BaseRepositoryInterface } from "../base/baseRepository.interface";
-
-    export interface ${pascal}RepositoryInterface extends BaseRepositoryInterface<${pascal}> {
+    export interface ${pascalName}RepositoryInterface extends BaseRepositoryInterface<${camelName}> {
     }
 `;
 }

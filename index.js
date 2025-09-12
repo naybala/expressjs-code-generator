@@ -3,12 +3,12 @@ import fs from "fs-extra";
 import path from "path";
 import inquirer from "inquirer";
 import pluralize from "pluralize";
+import _ from "lodash";
 import { fileURLToPath } from "url";
 
 // Template imports
 import controllerTemplate from "./templates/controller.js";
 import resourceIndexTemplate from "./templates/resourceIndex.js";
-import resourceShowTemplate from "./templates/resourceShow.js";
 import routeTemplate from "./templates/route.js";
 import serviceTemplate from "./templates/service.js";
 import validationTemplate from "./templates/validation.js";
@@ -37,33 +37,90 @@ async function main() {
   ]);
 
   const type = answers.type; // e.g. Web
-  const name = answers.name.toLowerCase(); // e.g. user
-  const pluralName = pluralize(name); // <-- pluralize properly
-  const pascalName = capitalize(name); // e.g. User
-  const camelName = name.toLowerCase(); // e.g. user
+  // OwnLicense
+  // Convert to lower case for general base name
+  const name = answers.name.toLowerCase(); // 'ownlicense'
+
+  // Pluralize the base name
+  const pluralName = pluralize(name); // 'ownlicenses'
+
+  // Convert to PascalCase
+  const pascalName = _.upperFirst(_.camelCase(answers.name)); // 'OwnLicense'
+
+  // Convert to camelCase
+  const camelName = _.camelCase(answers.name); // 'ownLicense'
+
+  const repoName = pluralize(camelName);
+
+  // Output all
+  console.log("name:", name);
+  console.log("pluralName:", pluralName);
+  console.log("pascalName:", pascalName);
+  console.log("camelName:", camelName);
+  console.log("repoName:", repoName);
 
   // === DOMAIN FILES ===
-  const domainPath = path.join(projectRoot, "modules", "domain", name);
+  const domainPath = path.join(projectRoot, "modules", "domain", repoName);
   await fs.ensureDir(domainPath);
 
   await fs.writeFile(
-    path.join(domainPath, `${pluralName}.repository.ts`),
-    repositoryTemplate(name)
+    path.join(domainPath, `${camelName}.repository.ts`),
+    repositoryTemplate(name, pluralName, pascalName, camelName, repoName)
   );
   await fs.writeFile(
-    path.join(domainPath, `${pluralName}Repository.interface.ts`),
-    repositoryInterfaceTemplate(name)
+    path.join(domainPath, `${camelName}Repository.interface.ts`),
+    repositoryInterfaceTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName
+    )
   );
 
   // === MODULE FILES ===
   const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
   const files = {
-    "controllers/index.ts": controllerTemplate(name, type, pluralName),
-    "resources/index.ts": resourceIndexTemplate(name),
-    "resources/show.ts": resourceShowTemplate(name),
-    "routes/index.ts": routeTemplate(name, type, pluralName),
-    "services/index.ts": serviceTemplate(name, type, pluralName),
-    "validations/index.ts": validationTemplate(name),
+    "controllers/index.ts": controllerTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "resources/index.ts": resourceIndexTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "routes/index.ts": routeTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "services/index.ts": serviceTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "validations/index.ts": validationTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
   };
 
   try {
