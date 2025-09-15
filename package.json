@@ -1,6 +1,6 @@
 {
   "name": "mini-express-generator",
-  "version": "1.0.15",
+  "version": "1.0.2",
   "type": "module",
   "bin": {
     "make-core-feature": "./index.js"
@@ -9,6 +9,7 @@
     "fs-extra": "^11.1.1",
     "inquirer": "^9.0.0",
     "lodash": "^4.17.21",
+    "ora": "^8.2.0",
     "pluralize": "^8.0.0"
   }
 }

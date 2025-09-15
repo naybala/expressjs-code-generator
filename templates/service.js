@@ -45,9 +45,9 @@ export default function serviceTemplate(
 
     // UPDATE
     export const update = async (id: string, data: any) => {
-      const existing = await ${camelName}Repository().find(Number(data.id));
+      const existing = await ${camelName}Repository().find(data.id);
       if (!existing) return null;
-      return ${camelName}Repository().update(Number(data.id), data);
+      return ${camelName}Repository().update(data.id, data);
     };
 
     // SOFT DELETE
