@@ -38,12 +38,12 @@ export default function serviceTemplate(
       const { page, limit } = getPagination(req.query);
       const search = req.query.search?.toString()?.replace(/[.*+?^${space}()|[\]\\]/g, '\\$&') || '';
 
-      const ${pluralName}:any = await ${camelName}Repository()
+      const ${pluralName}Data:any = await ${camelName}Repository()
         .select(['id'])
         .order('id')
         //.orWhereLike('name',search)
         .getWithPaginate(page,limit);
-      return index${pascalName}Resource(${pluralName});
+      return index${pascalName}Resource(${pluralName}Data);
     };
 
     // CREATE
@@ -51,20 +51,20 @@ export default function serviceTemplate(
       const id = generateId(17);
       data.id = id;
       data.createdUser = createdUser;
-      const ${camelName}:any = await ${camelName}Repository().create(data);
-      if (!${camelName}) {
+      const ${camelName}Data:any = await ${camelName}Repository().create(data);
+      if (!${camelName}Data) {
         throw new Error(createFail);
       }
-      return ${camelName};
+      return ${camelName}Data;
     };
 
     // GET SINGLE
     export const show = async (id: string) => {
-      const ${camelName}:any = await ${camelName}Repository().find(id);
-      if (!${camelName}) {
+      const ${camelName}Data:any = await ${camelName}Repository().find(id);
+      if (!${camelName}Data) {
         throw new Error(notFound);
       }
-      return show${pascalName}Resource(${camelName});
+      return show${pascalName}Resource(${camelName}Data);
     };
 
     // UPDATE
@@ -74,11 +74,11 @@ export default function serviceTemplate(
         throw new Error(notFound);
       }
       data.updatedUser = updatedUser;
-      ${camelName}Update = await ${camelName}Repository().update(id, data);
-      if (!${camelName}Update) {
+      const ${camelName}Data:any = await ${camelName}Repository().update(id, data);
+      if (!${camelName}Data) {
           throw new Error(updateFail);
       }
-      return ${camelName}Update;
+      return ${camelName}Data;
     };
 
     // SOFT DELETE
@@ -87,7 +87,7 @@ export default function serviceTemplate(
       if (!existing) {
         throw new Error(notFound);
       }
-      ${camelName}Deleted = await ${camelName}Repository().delete(id);
+      const ${camelName}Deleted = await ${camelName}Repository().delete(id);
       if (!${camelName}Deleted) {
           throw new Error(deleteFail);
       }
