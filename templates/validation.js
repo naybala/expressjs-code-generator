@@ -43,7 +43,7 @@ export default function validationTemplate(
  * https://naybala.netlify.app/
  * SOP @author Htin Lin Phyo
  * https://github.com/htinlinnphyo123
- * his personal portfolio is not implement yet!
+ * https://htinlinnphyo.vercel.app/
  *
  */
 
