@@ -1,6 +1,6 @@
 {
   "name": "mini-express-generator",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "type": "module",
   "bin": {
     "make-core-feature": "./index.js"
