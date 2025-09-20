@@ -5,7 +5,7 @@ export default function repositoryInterfaceTemplate(
   camelName,
   repoName
 ) {
-  return `import { ${camelName} } from "@prisma/client";
+  return `import { ${pluralName} } from "@prisma/client";
     import { BaseRepositoryInterface } from "../base/baseRepository.interface";
 
     /**
@@ -21,7 +21,7 @@ export default function repositoryInterfaceTemplate(
      *
      */
 
-    export interface ${pascalName}RepositoryInterface extends BaseRepositoryInterface<${camelName}> {
+    export interface ${pascalName}RepositoryInterface extends BaseRepositoryInterface<${pluralName}> {
     }
 `;
 }

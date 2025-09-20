@@ -10,7 +10,7 @@ export default function repositoryTemplate(
     import { baseRepository } from '@domain/base/base.repository';
     import { BaseRepositoryInterface } from "@domain/base/baseRepository.interface";
     import prisma from '../../../config/db';
-    import { ${camelName} } from '@prisma/client';
+    import { ${pluralName} } from '@prisma/client';
 
     /**
      *
@@ -26,7 +26,7 @@ export default function repositoryTemplate(
      */
 
     export const ${camelName}Repository = (): ${pascalName}RepositoryInterface => {
-      const getRepo = () => baseRepository<${camelName}>(prisma.${camelName});
+      const getRepo = () => baseRepository<${pluralName}>(prisma.${pluralName});
       return {
         ...getRepo(),
       };

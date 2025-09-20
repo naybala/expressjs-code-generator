@@ -92,6 +92,10 @@ async function main() {
   const pascalName = _.upperFirst(_.camelCase(answers.name));
   const camelName = _.camelCase(answers.name);
   const repoName = pluralize(camelName);
+  console.log(`pluralName: ${pluralName}`);
+  console.log(`pascalName: ${pascalName}`);
+  console.log(`camelName: ${camelName}`);
+  console.log(`repoName: ${repoName}`);
 
   // Paths
   const domainPath = path.join(projectRoot, "modules", "domain", repoName);

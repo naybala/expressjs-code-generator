@@ -18,7 +18,7 @@ export default function resourceIndexTemplate(
   return `
 import { PaginationResourceType } from '@web/base/types/paginate';
 import { buildPaginatedResource } from '@web/base/buildPaginatedResource';
-import { ${camelName} } from "@prisma/client";
+import { ${pluralName} } from "@prisma/client";
 
 /**
  *
@@ -34,10 +34,10 @@ import { ${camelName} } from "@prisma/client";
  */
 
 type Paginate${pascalName}Type = {
-  data: ${camelName}[];
+  data: ${pluralName}[];
 } & PaginationResourceType;
 
-const transform${pascalName} = (data: ${camelName}) => {
+const transform${pascalName} = (data: ${pluralName}) => {
   return {
     id: data.id,
     ${extraFieldLines}
@@ -49,11 +49,11 @@ export const index${pascalName}Resource = (data: Paginate${pascalName}Type) => {
   return buildPaginatedResource(data, transform${pascalName});
 };
 
-export const getAll${pascalName} = (data: ${camelName}[]) => {
+export const getAll${pascalName} = (data: ${pluralName}[]) => {
   return data.map(transform${pascalName});
 };
 
-export const show${pascalName}Resource = (data: ${camelName}) => ({
+export const show${pascalName}Resource = (data: ${pluralName}) => ({
   ...transform${pascalName}(data),
 });
 `;
