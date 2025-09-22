@@ -73,6 +73,13 @@ async function main() {
       message: "Name of the feature to generate (e.g. 'User'):",
     },
     {
+      type: "list",
+      name: "logicType",
+      message:
+        "What do you want to generate.For eg - All or repoLogic or service?",
+      choices: ["All", "repo-only", "logic-only"],
+    },
+    {
       type: "confirm",
       name: "addMoreFields",
       message: "Do you want to add more fields except id for this feature?",
@@ -92,17 +99,46 @@ async function main() {
   const pascalName = _.upperFirst(_.camelCase(answers.name));
   const camelName = _.camelCase(answers.name);
   const repoName = pluralize(camelName);
-  console.log(`pluralName: ${pluralName}`);
-  console.log(`pascalName: ${pascalName}`);
-  console.log(`camelName: ${camelName}`);
-  console.log(`repoName: ${repoName}`);
+  // console.log(`pluralName: ${pluralName}`);
+  // console.log(`pascalName: ${pascalName}`);
+  // console.log(`camelName: ${camelName}`);
+  // console.log(`repoName: ${repoName}`);
 
   // Paths
   const domainPath = path.join(projectRoot, "modules", "domain", repoName);
   const modulePath = path.join(projectRoot, "modules", type, `${camelName}s`);
 
-  // Check if feature already exists
-  if (fs.existsSync(domainPath) || fs.existsSync(modulePath)) {
+  // Check if Domain feature already exists
+  if (
+    fs.existsSync(domainPath) &&
+    answers.logicType === "All" &&
+    answers.logicType === "repo-only"
+  ) {
+    if (fs.existsSync(domainPath)) console.log(` - ${domainPath}`);
+    if (fs.existsSync(modulePath)) console.log(` - ${modulePath}`);
+    const { overwrite } = await inquirer.prompt([
+      {
+        type: "confirm",
+        name: "overwrite",
+        message: "Do you want to overwrite the existing feature?",
+        default: false,
+      },
+    ]);
+
+    if (!overwrite) {
+      console.log("Feature generation aborted.");
+      return;
+    } else {
+      console.log("Overwriting existing feature...");
+    }
+  }
+
+  // Check if Module feature already exists
+  if (
+    fs.existsSync(modulePath) &&
+    answers.logicType === "All" &&
+    answers.logicType === "logic-only"
+  ) {
     console.log(`Feature "${pascalName}" already exists:`);
     if (fs.existsSync(domainPath)) console.log(` - ${domainPath}`);
     if (fs.existsSync(modulePath)) console.log(` - ${modulePath}`);
@@ -130,89 +166,47 @@ async function main() {
     await new Promise((resolve) => setTimeout(resolve, waitingTime));
 
     // === DOMAIN FILES ===
-    await fs.ensureDir(domainPath);
-
-    const domainFiles = [
-      {
-        filename: `${camelName}.repository.ts`,
-        content: repositoryTemplate(
-          name,
-          pluralName,
-          pascalName,
-          camelName,
-          repoName
-        ),
-      },
-      {
-        filename: `${camelName}Repository.interface.ts`,
-        content: repositoryInterfaceTemplate(
-          name,
-          pluralName,
-          pascalName,
-          camelName,
-          repoName
-        ),
-      },
-    ];
-
-    for (const file of domainFiles) {
-      const fullPath = path.join(domainPath, file.filename);
-      await fs.writeFile(fullPath, file.content);
-      console.log(`\x1b[32m✓\x1b[0m Created ${fullPath}`);
-    }
-
-    // === MODULE FILES ===
-    const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
-    const files = {
-      "controllers/index.ts": controllerTemplate(
+    if (answers.logicType === "All") {
+      await fs.ensureDir(domainPath);
+      await makeDomainFile(
+        domainPath,
         name,
         pluralName,
         pascalName,
         camelName,
-        repoName,
-        type
-      ),
-      "resources/index.ts": resourceIndexTemplate(
-        name,
-        pluralName,
-        pascalName,
-        camelName,
-        repoName,
+        repoName
+      );
+      // === MODULE FILES ===
+      await makeModuleFile(
         type,
+        name,
+        pluralName,
+        pascalName,
+        camelName,
+        repoName,
         extraFields
-      ),
-      "routes/index.ts": routeTemplate(
+      );
+    } else if (answers.logicType === "repo-only") {
+      await fs.ensureDir(domainPath);
+      await makeDomainFile(
+        domainPath,
         name,
         pluralName,
         pascalName,
         camelName,
-        repoName,
-        type
-      ),
-      "services/index.ts": serviceTemplate(
-        name,
-        pluralName,
-        pascalName,
-        camelName,
-        repoName,
-        type
-      ),
-      "validations/index.ts": validationTemplate(
-        name,
-        pluralName,
-        pascalName,
-        camelName,
-        repoName,
+        repoName
+      );
+    } else if (answers.logicType === "logic-only") {
+      // === MODULE FILES ===
+      await makeModuleFile(
         type,
+        name,
+        pluralName,
+        pascalName,
+        camelName,
+        repoName,
         extraFields
-      ),
-    };
-
-    for (const [relativePath, content] of Object.entries(files)) {
-      const fullPath = path.join(basePath, relativePath);
-      await fs.ensureDir(path.dirname(fullPath));
-      await fs.writeFile(fullPath, content.trim());
-      console.log(`\x1b[32m✓\x1b[0m Created ${fullPath}`);
+      );
     }
 
     spinner.succeed(`"${pascalName}" feature generated successfully!`);
@@ -224,5 +218,106 @@ async function main() {
     console.error(err);
   }
 }
+
+const makeDomainFile = async (
+  domainPath,
+  name,
+  pluralName,
+  pascalName,
+  camelName,
+  repoName
+) => {
+  const domainFiles = [
+    {
+      filename: `${camelName}.repository.ts`,
+      content: repositoryTemplate(
+        name,
+        pluralName,
+        pascalName,
+        camelName,
+        repoName
+      ),
+    },
+    {
+      filename: `${camelName}Repository.interface.ts`,
+      content: repositoryInterfaceTemplate(
+        name,
+        pluralName,
+        pascalName,
+        camelName,
+        repoName
+      ),
+    },
+  ];
+
+  for (const file of domainFiles) {
+    const fullPath = path.join(domainPath, file.filename);
+    await fs.writeFile(fullPath, file.content);
+    console.log(`\x1b[32m✓\x1b[0m Created ${fullPath}`);
+  }
+};
+
+const makeModuleFile = async (
+  type,
+  name,
+  pluralName,
+  pascalName,
+  camelName,
+  repoName,
+  extraFields
+) => {
+  const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
+  const files = {
+    "controllers/index.ts": controllerTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "resources/index.ts": resourceIndexTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type,
+      extraFields
+    ),
+    "routes/index.ts": routeTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "services/index.ts": serviceTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type
+    ),
+    "validations/index.ts": validationTemplate(
+      name,
+      pluralName,
+      pascalName,
+      camelName,
+      repoName,
+      type,
+      extraFields
+    ),
+  };
+
+  for (const [relativePath, content] of Object.entries(files)) {
+    const fullPath = path.join(basePath, relativePath);
+    await fs.ensureDir(path.dirname(fullPath));
+    await fs.writeFile(fullPath, content.trim());
+    console.log(`\x1b[32m✓\x1b[0m Created ${fullPath}`);
+  }
+};
 
 main().catch((err) => console.error("Error:", err));
