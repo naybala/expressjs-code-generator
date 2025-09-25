@@ -33,6 +33,9 @@ const deleteSuccess = "${pascalName} delete success";
 
 
 export const index = async (req: Request, res: Response): Promise<void> => {
+  // #swagger.parameters['limit'] = { in: 'query', type: 'integer', default: 10 }
+  // #swagger.parameters['page'] = { in: 'query', type: 'integer', default: 1 }
+  // #swagger.parameters['search'] = { in: 'query', type: 'string', default: '' }
   try {
     const ${repoName}:any = await ${pascalName}Service.index(req);
     res.successResponse(${repoName}, indexSuccess);

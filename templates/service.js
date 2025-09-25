@@ -9,10 +9,11 @@ export default function serviceTemplate(
   const space = "";
 
   return `import getPagination from '@util/request/get-pagination';
-    import { ${camelName}Repository } from "@/modules/domain/${repoName}/${camelName}.repository";
-    import { index${pascalName}Resource, show${pascalName}Resource } from "../resources";
-    import { generateId } from '@/utils/id-generator';
-    import { generatePresignedUrl,deleteS3Object } from  '@util/storage/s3-builder';
+  import { ${camelName}Repository } from "@/modules/domain/${repoName}/${camelName}.repository";
+  import { index${pascalName}Resource, show${pascalName}Resource } from "../resources";
+  import { generateId } from '@/utils/id-generator';
+  import { generatePresignedUrl,deleteS3Object } from  '@util/storage/s3-builder';
+  import { NotFoundError } from '@/utils/error-handler';
 
     /**
      *
@@ -62,7 +63,7 @@ export default function serviceTemplate(
     export const show = async (id: string) => {
       const ${camelName}Data:any = await ${camelName}Repository().find(id);
       if (!${camelName}Data) {
-        throw new Error(notFound);
+        throw new NotFoundError(notFound);
       }
       return show${pascalName}Resource(${camelName}Data);
     };

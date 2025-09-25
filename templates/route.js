@@ -37,7 +37,7 @@ export default function routeTemplate(
       ${camelName}Controller.store
     );
     router.put(
-      "/",
+      "/:id",
       update${pascalName}Validator,
       validateRequest,
       ${camelName}Controller.update
