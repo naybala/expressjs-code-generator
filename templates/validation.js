@@ -11,22 +11,8 @@ export default function validationTemplate(
     return fields
       .map((field) => {
         const base = `body("${field.name}")`;
-        let check = "";
-
-        switch (field.type) {
-          case "string":
-            check = `${base}.isString().withMessage("${field.name} must be a string")`;
-            break;
-          case "number":
-            check = `${base}.isNumeric().withMessage("${field.name} must be a number")`;
-            break;
-          case "boolean":
-            check = `${base}.isBoolean().withMessage("${field.name} must be a boolean")`;
-            break;
-          default:
-            check = `${base}.notEmpty().withMessage("${field.name} is required")`;
-        }
-
+        let check = "";        
+        check = `${base}.notEmpty().withMessage("${field.name} is required")`;
         return check;
       })
       .join(",\n  ");
