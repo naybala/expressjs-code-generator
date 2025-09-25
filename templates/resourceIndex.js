@@ -27,7 +27,7 @@ import { ${pluralName} } from "@prisma/client";
  * @author Nay Ba la
  * https://github.com/naybala
  * https://naybala.netlify.app/
- * SOP @author Htin Lin Phyo
+ * SOP @author Htin Linn Phyo
  * https://github.com/htinlinnphyo123
  * https://htinlinnphyo.vercel.app/
  *
