@@ -27,7 +27,7 @@ export default function validationTemplate(
  * @author Nay Ba la
  * https://github.com/naybala
  * https://naybala.netlify.app/
- * SOP @author Htin Lin Phyo
+ * SOP @author Htin Linn Phyo
  * https://github.com/htinlinnphyo123
  * https://htinlinnphyo.vercel.app/
  *
@@ -38,7 +38,6 @@ export const store${pascalName}Validator: ValidationChain[] = [
 ];
 
 export const update${pascalName}Validator: ValidationChain[] = [
-  param("id").notEmpty().withMessage("ID is required"),
   ${generateValidationLines(extraFields, true)}
 ];
 `;
