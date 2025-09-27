@@ -6,7 +6,7 @@ export default function repositoryInterfaceTemplate(
   repoName
 ) {
   return `import { ${pluralName} } from "@prisma/client";
-import { BaseRepositoryInterface } from "../base/baseRepository.interface";
+import { BaseRepositoryInterface } from "@domain/base/baseRepository.interface";
 
 /**
  *
