@@ -6,11 +6,10 @@ export default function repositoryTemplate(
   repoName
 ) {
   return `
-import { ${pascalName}RepositoryInterface } from './${camelName}Repository.interface';
-import { baseRepository } from '@domain/base/base.repository';
-import { BaseRepositoryInterface } from "@domain/base/baseRepository.interface";
-import prisma from '../../../config/db';
-import { ${pluralName} } from '@prisma/client';
+import { ${pascalName}RepositoryInterface } from "./${camelName}Repository.interface";
+import { baseRepository } from "@domain/base/base.repository";
+import prisma from "@config/db";
+import { ${pluralName} } from "@prisma/client";
 
 /**
  *

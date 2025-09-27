@@ -6,11 +6,12 @@ export default function routeTemplate(
   repoName,
   type
 ) {
+  const typeSmallCase = type.toLowerCase();
   return `import { Router } from "express";
-import { authenticate } from "../../base/auth";
-import * as ${camelName}Controller from "../controllers";
-import { store${pascalName}Validator, update${pascalName}Validator } from "../validations";
-import { validateRequest } from "../../base/validateRequest";
+import { authenticate } from "@${typeSmallCase}/base/auth";
+import * as ${camelName}Controller from "@${typeSmallCase}/${pluralName}/controllers";
+import { store${pascalName}Validator, update${pascalName}Validator } from "@${typeSmallCase}/${pluralName}/validations";
+import { validateRequest } from "@${typeSmallCase}/base/validateRequest";
 
 /**
  *

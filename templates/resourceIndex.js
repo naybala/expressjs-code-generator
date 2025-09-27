@@ -14,10 +14,10 @@ export default function resourceIndexTemplate(
   };
 
   const extraFieldLines = generateExtraFields(extraFields);
-
+  const typeSmallCase = type.toLowerCase();
   return `
-import { PaginationResourceType } from '@web/base/types/paginate';
-import { buildPaginatedResource } from '@web/base/buildPaginatedResource';
+import { PaginationResourceType } from "@${typeSmallCase}/base/types/paginate";
+import { buildPaginatedResource } from "@${typeSmallCase}/base/buildPaginatedResource";
 import { ${pluralName} } from "@prisma/client";
 
 /**
@@ -40,8 +40,7 @@ type Paginate${pascalName}Type = {
 const transform${pascalName} = (data: ${pluralName}) => {
   return {
     id: data.id,
-    ${extraFieldLines}
-    createdAt: data.createdAt,
+
   };
 };
 
@@ -55,6 +54,7 @@ export const getAll${pascalName} = (data: ${pluralName}[]) => {
 
 export const show${pascalName}Resource = (data: ${pluralName}) => ({
   ...transform${pascalName}(data),
+${extraFieldLines}
 });
 `;
 }

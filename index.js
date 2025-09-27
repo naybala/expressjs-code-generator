@@ -106,7 +106,7 @@ async function main() {
 
   // Paths
   const domainPath = path.join(projectRoot, "modules", "domain", repoName);
-  const modulePath = path.join(projectRoot, "modules", type, `${camelName}s`);
+  const modulePath = path.join(projectRoot, "modules", type, `${pluralName}`);
 
   // Check if Domain feature already exists
   if (
@@ -266,7 +266,7 @@ const makeModuleFile = async (
   repoName,
   extraFields
 ) => {
-  const basePath = path.join(projectRoot, "modules", type, `${camelName}s`);
+  const basePath = path.join(projectRoot, "modules", type, `${pluralName}`);
   const files = {
     "controllers/index.ts": controllerTemplate(
       name,
